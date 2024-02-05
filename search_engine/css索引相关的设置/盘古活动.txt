@@ -1,0 +1,242 @@
+PUT mengxiang_activity_v1
+{
+  "settings": {
+    "number_of_shards": "1",
+    "number_of_replicas": "2",
+    "analysis": {
+      "filter": {
+        "my_synonym_filter": {
+          "type": "synonym",
+          "synonyms_path": "analysis/synonym.txt"
+        },
+        "edge_ngram_filter": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20,
+          "token_chars": [
+            "letter",
+            "digit"
+          ]
+        },
+        "my_pinyin_filter": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_joined_full_pinyin": true,
+          "keep_full_pinyin": true,
+          "none_chinese_pinyin_tokenize": false,
+          "keep_none_chinese_in_joined_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        }
+      },
+      "tokenizer": {
+        "full_pinyin_tokenizer": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_joined_full_pinyin": true,
+          "keep_full_pinyin": true,
+          "none_chinese_pinyin_tokenize": false,
+          "keep_none_chinese_in_joined_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        },
+        "first_py_letter_tokenizer": {
+          "type": "pinyin",
+          "keep_first_letter": true,
+          "keep_full_pinyin": false,
+          "keep_original": false,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "trim_whitespace": true,
+          "keep_none_chinese_in_first_letter": false,
+          "none_chinese_pinyin_tokenize": false,
+          "keep_none_chinese": true,
+          "keep_none_chinese_in_joined_full_pinyin": true
+        }
+      },
+      "analyzer": {
+        "ik_syno": {
+          "type": "custom",
+          "tokenizer": "ik_smart",
+          "filter": [
+            "lowercase",
+            "my_synonym_filter"
+          ]
+        },
+        "ik_syno_max": {
+          "type": "custom",
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "lowercase",
+            "my_synonym_filter"
+          ]
+        },
+        "my_ik_pinyin": {
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "lowercase",
+            "my_pinyin_filter"
+          ]
+        },
+        "full_pinyin_analyzer": {
+          "tokenizer": "full_pinyin_tokenizer"
+        },
+        "first_py_analyzer": {
+          "tokenizer": "first_py_letter_tokenizer"
+        }		
+      }
+    }
+  },
+  "mappings": {
+    "mengxiang_activity": {
+      "properties": {
+        "id": {
+          "type": "keyword"
+        },
+        "activity_name": {
+          "type": "text",
+          "fields": {
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "start_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        },
+        "end_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        },
+        "brand_id": {
+          "type": "keyword"
+        },
+        "brand_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            },
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }		
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "up_down_status": {
+          "type": "integer"
+        },
+        "front_desk_menu": {
+          "type": "keyword"
+        },
+        "new_ratio": {
+          "type": "float"
+        },
+        "sales": {
+          "type": "long"
+        },
+        "forwards": {
+          "type": "long"
+        },
+        "create_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        },
+        "update_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        },
+        "is_delete": {
+          "type": "keyword"
+        },
+        "merchant_code": {
+          "type": "keyword"
+        },
+        "merchant_id": {
+          "type": "keyword"
+        },		
+        "product_info": {
+          "type": "text",
+          "fields": {
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "member_levels": {
+          "type": "keyword"
+        },
+        "channels": {
+          "type": "keyword"
+        },
+        "promotion_type": {
+          "type": "keyword"
+        },
+        "merchant_red_packet_last_amount": {
+          "type": "float"
+        },		
+        "activity_model": {
+          "type": "keyword"
+        },
+        "all_sort_value": {
+          "type": "integer"
+        },
+		"menu_sort_value": {
+          "type": "integer"
+        },
+		"foreshow_sort_value": {
+          "type": "integer"
+        },		
+		"sold_out": {
+          "type": "keyword"
+        }	
+      }
+    }
+  }
+}
+
+
+PUT mengxiang_activity_v1/_alias
+{
+"actions": [
+    {
+      "add": {
+        "index": "mengxiang_activity_v1",
+        "alias": "mengxiang_activity"
+      }
+    }
+  ] 
+}

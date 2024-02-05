@@ -1,0 +1,412 @@
+PUT mengxiang_product_sku_v1
+{
+  "settings": {
+    "number_of_shards": "1",
+    "number_of_replicas": "2",
+    "analysis": {
+      "filter": {
+        "my_synonym_filter": {
+          "type": "synonym",
+          "synonyms_path": "/rds/datastore/elasticsearch/v6.5.4/package/elasticsearch-6.5.4/plugins/analysis-dynamic-synonym/config/synonyms.txt"
+        },
+        "edge_ngram_filter": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20,
+          "token_chars": [
+            "letter",
+            "digit"
+          ]
+        },
+        "my_pinyin_filter": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        }
+      },
+      "tokenizer": {
+        "full_pinyin_tokenizer": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_joined_full_pinyin": true,
+          "keep_full_pinyin": true,
+          "none_chinese_pinyin_tokenize": false,
+          "keep_none_chinese_in_joined_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        },
+        "first_py_letter_tokenizer": {
+          "type": "pinyin",
+          "keep_first_letter": true,
+          "keep_full_pinyin": false,
+          "keep_original": false,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "trim_whitespace": true,
+          "keep_none_chinese_in_first_letter": false,
+          "none_chinese_pinyin_tokenize": false,
+          "keep_none_chinese": true,
+          "keep_none_chinese_in_joined_full_pinyin": true
+        }
+      },
+      "analyzer": {
+        "ik_syno": {
+          "type": "custom",
+          "tokenizer": "ik_smart",
+          "filter": [
+            "lowercase",
+            "my_synonym_filter"
+          ]
+        },
+        "ik_syno_max": {
+          "type": "custom",
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "lowercase",
+            "my_synonym_filter"
+          ]
+        },
+        "my_ik_pinyin": {
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "lowercase",
+            "my_pinyin_filter"
+          ]
+        },
+        "full_pinyin_analyzer": {
+          "tokenizer": "full_pinyin_tokenizer"
+        },
+        "first_py_analyzer": {
+          "tokenizer": "first_py_letter_tokenizer"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "mengxiang_product_sku": {
+      "properties": {
+        "id": {
+          "type": "keyword"
+        },
+        "item_code": {
+          "type": "keyword"
+        },		
+        "activity_id": {
+          "type": "keyword"
+        },
+        "aggregation_category": {
+          "type": "keyword"
+        },
+        "start_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        },
+        "end_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        },
+        "product_num": {
+          "type": "keyword"
+        },
+        "activity_status": {
+          "type": "integer"
+        },
+        "brand_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            },
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "brand_id": {
+          "type": "keyword"
+        },
+        "first_category_code": {
+          "type": "keyword"
+        },
+        "second_category_code": {
+          "type": "keyword"
+        },
+        "category_code": {
+          "type": "keyword"
+        },
+        "category_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            },
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+		"first_category_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            },
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+		"second_category_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            },
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "is_same_price": {
+          "type": "integer"
+        },	
+        "activity_mode": {
+          "type": "integer"
+        },			
+        "merchant_code": {
+          "type": "keyword"
+        },
+        "description": {
+          "type": "text",
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "activity_brand_id": {
+          "type": "keyword"
+        },
+        "member_levels": {
+          "type": "keyword"
+        },
+        "channels": {
+          "type": "keyword"
+        },
+        "is_delete": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "mer_style_no": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text",
+          "fields": {
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "sub_title": {
+          "type": "text",
+          "fields": {
+            "ik_pinyin": {
+              "type": "text",
+              "analyzer": "my_ik_pinyin"
+            },
+            "first_py": {
+              "type": "text",
+              "analyzer": "first_py_analyzer"
+            },
+            "full_pinyin": {
+              "type": "text",
+              "analyzer": "full_pinyin_analyzer"
+            }
+          },
+          "analyzer": "ik_syno_max",
+          "search_analyzer": "ik_syno"
+        },
+        "price": {
+          "type": "float"
+        },
+        "sale_price": {
+          "type": "float"
+        },		
+        "profit": {
+          "type": "float"
+        },
+        "tag_price": {
+          "type": "float"
+        },		
+        "sales": {
+          "type": "long"
+        },
+        "sold_out": {
+          "type": "keyword"
+        },
+        "forwards": {
+          "type": "long"
+        },
+        "up_count": {
+          "type": "integer"
+        },		
+        "schedule_type": {
+          "type": "keyword"
+        },
+        "sizes": {
+          "type": "keyword"
+        },
+        "shelf_status": {
+          "type": "integer"
+        },
+        "front_desk_menu": {
+          "type": "keyword"
+        },
+        "activity_model": {
+          "type": "integer"
+        },
+        "discount": {
+          "type": "float"
+        },
+        "vip1_price": {
+          "type": "float"
+        },
+        "vip1_profit": {
+          "type": "float"
+        },
+        "vip2_price": {
+          "type": "float"
+        },
+        "vip2_profit": {
+          "type": "float"
+        },
+        "vip3_price": {
+          "type": "float"
+        },
+        "vip3_profit": {
+          "type": "float"
+        },
+        "vip4_price": {
+          "type": "float"
+        },
+        "vip4_profit": {
+          "type": "float"
+        },
+        "vip5_price": {
+          "type": "float"
+        },
+        "vip5_profit": {
+          "type": "float"
+        },
+        "vip6_price": {
+          "type": "float"
+        },
+        "vip6_profit": {
+          "type": "float"
+        },
+        "product_id": {
+          "type": "keyword"
+        },
+		"sort_number":{
+		  "type": "integer"
+		},
+        "create_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        },
+        "update_time": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+        }
+      }
+    }
+  }
+}
+
+
+PUT mengxiang_product_sku_v1/_alias
+{
+"actions": [
+    {
+      "add": {
+        "index": "mengxiang_product_sku_v1",
+        "alias": "mengxiang_product_sku"
+      }
+    }
+  ] 
+}
+
+建立索引的字段
+sub_title
+title
+brand_name
+
+first_category_name
+second_category_name
+category_name
+description
